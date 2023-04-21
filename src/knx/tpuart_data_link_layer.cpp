@@ -419,7 +419,7 @@ void TpUartDataLinkLayer::loop()
                 {
                     loadNextTxFrame();
                     _txState = TX_FRAME;
-#ifdef DBG_TRACE
+#ifdef DBG_TRACE_TX
                     println("TX_FRAME");
 #endif
                 }
@@ -431,7 +431,7 @@ void TpUartDataLinkLayer::loop()
                     {
                         _waitConfirmStartTime = millis();
                         _txState = TX_WAIT_CONN;
-#ifdef DBG_TRACE
+#ifdef DBG_TRACE_TX
                         println("TX_WAIT_CONN");
 #endif
                     }
@@ -462,7 +462,7 @@ void TpUartDataLinkLayer::loop()
                     _sendBuffer = 0;
                     _sendBufferLength = 0;
                     _txState = TX_IDLE;
-#ifdef DBG_TRACE
+#ifdef DBG_TRACE_TX
                     println("TX_IDLE");
 #endif
                 }
