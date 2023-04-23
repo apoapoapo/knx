@@ -1,6 +1,5 @@
 #include "arduino_platform.h"
 #include "knx/bits.h"
-
 #include <Arduino.h>
 #ifndef KNX_NO_SPI
 #include <SPI.h>
@@ -14,9 +13,14 @@ ArduinoPlatform::ArduinoPlatform() : _knxSerial(nullptr)
 {
 }
 
+#ifdef SOFT_SERIAL
+ArduinoPlatform::ArduinoPlatform(SoftwareSerialE1* knxSerial) : _knxSerial(knxSerial)
+#else
 ArduinoPlatform::ArduinoPlatform(HardwareSerial* knxSerial) : _knxSerial(knxSerial)
+#endif
 {
 }
+
 
 void ArduinoPlatform::fatalError()
 {
@@ -33,7 +37,11 @@ void ArduinoPlatform::fatalError()
     }
 }
 
+#ifdef SOFT_SERIAL
+void ArduinoPlatform::knxUart( SoftwareSerialE1* serial )
+#else
 void ArduinoPlatform::knxUart( HardwareSerial* serial )
+#endif
 {
     if (_knxSerial)
         closeUart();
@@ -41,14 +49,22 @@ void ArduinoPlatform::knxUart( HardwareSerial* serial )
     setupUart();
 }
 
+#ifdef SOFT_SERIAL
+SoftwareSerialE1* ArduinoPlatform::knxUart()
+#else
 HardwareSerial* ArduinoPlatform::knxUart()
+#endif
 {
     return _knxSerial;
 }
 
 void ArduinoPlatform::setupUart()
 {
+#ifdef SOFT_SERIAL
+    _knxSerial->begin(19200);
+#else
     _knxSerial->begin(19200, SERIAL_8E1);
+#endif
     while (!_knxSerial) 
         ;
 }
@@ -68,14 +84,14 @@ int ArduinoPlatform::uartAvailable()
 
 size_t ArduinoPlatform::writeUart(const uint8_t data)
 {
-    //printHex("<p", &data, 1);
+    // printHex("Write: ", &data, 1);
     return _knxSerial->write(data);
 }
 
 
 size_t ArduinoPlatform::writeUart(const uint8_t *buffer, size_t size)
 {
-    //printHex("<p", buffer, size);
+    // printHex("Write: ", buffer, size);
     return _knxSerial->write(buffer, size);
 }
 
@@ -83,8 +99,8 @@ size_t ArduinoPlatform::writeUart(const uint8_t *buffer, size_t size)
 int ArduinoPlatform::readUart()
 {
     int val = _knxSerial->read();
-    //if(val > 0)
-    //    printHex("p>", (uint8_t*)&val, 1);
+    // if(val >= 0)
+        // printHex("Read : ", (uint8_t*)&val, 1);
     return val;
 }
 
@@ -99,7 +115,7 @@ size_t ArduinoPlatform::readBytesUart(uint8_t *buffer, size_t length)
         pos += val;
         toRead -= val;
     }
-    //printHex("p>", buffer, length);
+    // printHex("Read : ", buffer, length);
     return length;
 }
 

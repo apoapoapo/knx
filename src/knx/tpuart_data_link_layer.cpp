@@ -127,7 +127,7 @@ void TpUartDataLinkLayer::loop()
         { 
             //reset chip every 1 seconds
             _lastResetChipTime = millis();
-            _enabled = resetChip();
+            enabled(true);
         }
     }
 
@@ -541,8 +541,8 @@ void TpUartDataLinkLayer::enabled(bool value)
     if (value && !_enabled)
     {
         _platform.setupUart();
-
-        if (resetChip())
+        bool reset = false;
+        if (resetChip()) 
         {
             _enabled = true;
             print("ownaddr ");

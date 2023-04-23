@@ -5,7 +5,11 @@ class Stm32Platform : public ArduinoPlatform
 {
 public:
     Stm32Platform();
+#ifdef SOFT_SERIAL
+    Stm32Platform( SoftwareSerialE1* s);
+#else
     Stm32Platform( HardwareSerial* s);
+#endif
     ~Stm32Platform();
 
     // unique serial number

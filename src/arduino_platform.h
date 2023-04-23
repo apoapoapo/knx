@@ -1,4 +1,7 @@
 #include "knx/platform.h"
+#ifdef SOFT_SERIAL
+#include <SoftwareSerialE1.h>
+#endif
 
 #include "Arduino.h"
 
@@ -10,14 +13,23 @@ class ArduinoPlatform : public Platform
 {
   public:
     ArduinoPlatform();
+#ifdef SOFT_SERIAL
+    ArduinoPlatform(SoftwareSerialE1* knxSerial);
+#else
     ArduinoPlatform(HardwareSerial* knxSerial);
-
+#endif
+    
     // basic stuff
     void fatalError();
 
     //uart
+#ifdef SOFT_SERIAL
+    virtual void knxUart( SoftwareSerialE1* serial);
+    virtual SoftwareSerialE1* knxUart();
+#else
     virtual void knxUart( HardwareSerial* serial);
     virtual HardwareSerial* knxUart();
+#endif
     virtual void setupUart();
     virtual void closeUart();
     virtual int uartAvailable();
@@ -37,5 +49,9 @@ class ArduinoPlatform : public Platform
 #endif
 
   protected:
+#ifdef SOFT_SERIAL
+    SoftwareSerialE1* _knxSerial;
+#else
     HardwareSerial* _knxSerial;
+#endif
 };

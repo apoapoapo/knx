@@ -1,11 +1,16 @@
 #include "stm32_platform.h"
-
 #ifdef ARDUINO_ARCH_STM32
+#include <Arduino.h>
 #include <EEPROM.h>
 #include "knx/bits.h"
 
+#ifdef SOFT_SERIAL
+SoftwareSerialE1 SSerial = SoftwareSerialE1(PB14, PB15);
+#define KNX_SERIAL SSerial
+#else 
 #ifndef KNX_SERIAL
-#define KNX_SERIAL Serial2
+#define KNX_SERIAL Serial
+#endif
 #endif
 
 Stm32Platform::Stm32Platform()
@@ -15,7 +20,11 @@ Stm32Platform::Stm32Platform()
 {
 }
 
+#ifdef SOFT_SERIAL
+Stm32Platform::Stm32Platform( SoftwareSerialE1* s) : ArduinoPlatform(s)
+#else
 Stm32Platform::Stm32Platform( HardwareSerial* s) : ArduinoPlatform(s)
+#endif
 {
 }
 
